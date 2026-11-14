@@ -61,6 +61,9 @@
 
   $('file').addEventListener('change', e => { loadFile(e.target.files[0]); e.target.value = ''; });
 
+  // click en la zona vacía abre el selector
+  stage.addEventListener('click', () => { if (!photo && !stream) $('file').click(); });
+
   // drag & drop file
   ['dragenter', 'dragover'].forEach(t => stage.addEventListener(t, e => { e.preventDefault(); stage.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(t => stage.addEventListener(t, e => { e.preventDefault(); stage.classList.remove('over'); }));
