@@ -91,3 +91,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}
 .caption{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfdff}
 .caption-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-weight:700;font-size:13px;color:var(--navy)}
 .caption textarea{width:100%;border:0;background:transparent;resize:vertical;font:500 14px/1.55 "Montserrat",sans-serif;color:var(--ink);outline:none}
+
+.formats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.formats button{font:600 14px "Montserrat",sans-serif;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+.formats button small{font-weight:500;font-size:11px;color:var(--muted)}
+.formats button[aria-pressed=true]{border-color:var(--sky);background:var(--ice);box-shadow:0 0 0 2px rgba(34,195,245,.25)}
+.ic{display:block;border:2px solid currentColor;border-radius:4px;margin-bottom:2px}
+.ic.sq{width:18px;height:18px}.ic.hz{width:26px;height:16px}.ic.vt{width:14px;height:24px}
+.stage[data-fmt=horizontal]{aspect-ratio:16/9}
+.stage[data-fmt=vertical]{aspect-ratio:9/16;width:min(100%,calc(78vh*9/16));margin:0 auto}

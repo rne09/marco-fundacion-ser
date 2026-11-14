@@ -1,29 +1,64 @@
 (() => {
-  const S = 1080;
+  const FORMATS = {
+    cuadrado:   { w: 1080, h: 1080, src: 'assets/marco.png' },
+    horizontal: { w: 1920, h: 1080, src: 'assets/marco-horizontal.png' },
+    vertical:   { w: 1080, h: 1920, src: 'assets/marco-vertical.png' },
+  };
   const $ = (id) => document.getElementById(id);
   const canvas = $('canvas'), ctx = canvas.getContext('2d');
   const stage = $('stage'), video = $('video');
-  const frame = new Image();
-  frame.src = 'assets/marco.png';
+  const frames = {};
+  for (const k in FORMATS) { const i = new Image(); i.src = FORMATS[k].src; i.onload = () => draw(); frames[k] = i; }
 
-  let photo = null, scale = 1, rot = 0, ox = 0, oy = 0, base = 1, stream = null;
+  let fmt = 'cuadrado', W = 1080, H = 1080;
+  let photo = null, scale = 1, rot = 0, ox = 0, oy = 0, stream = null;
+
+  // Escala mínima para que la foto (girada) cubra todo el lienzo: nunca quedan franjas
+  function geom() {
+    const t = rot * Math.PI / 180, c = Math.abs(Math.cos(t)), si = Math.abs(Math.sin(t));
+    const needW = W * c + H * si, needH = W * si + H * c; // lienzo visto en ejes de la foto
+    const cover = Math.max(needW / photo.width, needH / photo.height);
+    return { t, needW, needH, s: cover * scale };
+  }
+  function clamp() {
+    if (!photo) return;
+    const g = geom();
+    const mx = Math.max(0, (photo.width * g.s - g.needW) / 2);
+    const my = Math.max(0, (photo.height * g.s - g.needH) / 2);
+    // desplazamiento en ejes de la foto
+    const cs = Math.cos(-g.t), sn = Math.sin(-g.t);
+    let u = ox * cs - oy * sn, v = ox * sn + oy * cs;
+    u = Math.max(-mx, Math.min(mx, u)); v = Math.max(-my, Math.min(my, v));
+    const c2 = Math.cos(g.t), s2 = Math.sin(g.t);
+    ox = u * c2 - v * s2; oy = u * s2 + v * c2;
+  }
 
   // ---------- render ----------
   function draw() {
-    ctx.clearRect(0, 0, S, S);
+    ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = '#e8f6fd';
-    ctx.fillRect(0, 0, S, S);
+    ctx.fillRect(0, 0, W, H);
     if (photo) {
+      clamp();
+      const g = geom();
       ctx.save();
-      ctx.translate(S / 2 + ox, S / 2 + oy);
-      ctx.rotate(rot * Math.PI / 180);
-      const s = base * scale;
-      ctx.drawImage(photo, -photo.width * s / 2, -photo.height * s / 2, photo.width * s, photo.height * s);
+      ctx.translate(W / 2 + ox, H / 2 + oy);
+      ctx.rotate(g.t);
+      ctx.drawImage(photo, -photo.width * g.s / 2, -photo.height * g.s / 2, photo.width * g.s, photo.height * g.s);
       ctx.restore();
     }
-    if (frame.complete) ctx.drawImage(frame, 0, 0, S, S);
+    const f = frames[fmt];
+    if (f.complete && f.naturalWidth) ctx.drawImage(f, 0, 0, W, H);
   }
-  frame.onload = draw;
+
+  function setFormat(k) {
+    fmt = k; W = FORMATS[k].w; H = FORMATS[k].h;
+    canvas.width = W; canvas.height = H;
+    stage.dataset.fmt = k;
+    document.querySelectorAll('#formats button').forEach(b => b.setAttribute('aria-pressed', b.dataset.fmt === k));
+    draw();
+  }
+  document.querySelectorAll('#formats button').forEach(b => b.addEventListener('click', () => setFormat(b.dataset.fmt)));
 
   // ---------- steps ----------
   function step(n) {
@@ -38,7 +73,9 @@
 
   function setPhoto(img) {
     photo = img;
-    base = Math.max(S / img.width, S / img.height);
+    // sugerir formato según la foto
+    const r = img.width / img.height;
+    setFormat(r > 1.25 ? 'horizontal' : r < 0.8 ? 'vertical' : 'cuadrado');
     reset();
     $('dropHint').hidden = true;
     stage.classList.add('has-photo');
@@ -103,7 +140,7 @@
 
   const pointers = new Map();
   let lastDist = 0;
-  const k = () => S / stage.clientWidth;
+  const k = () => W / stage.clientWidth;
   stage.addEventListener('pointerdown', e => {
     if (!photo) return;
     stage.setPointerCapture(e.pointerId);
@@ -136,18 +173,18 @@
 
   // ---------- export ----------
   const blob = () => new Promise(r => canvas.toBlob(r, 'image/jpeg', .95));
-  const fname = 'marco-24-anos-fundacion-ser.jpg';
+  const fname = () => `marco-24-years-fundacion-ser-${fmt}.jpg`;
   $('downloadBtn').addEventListener('click', async () => {
     const b = await blob();
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(b); a.download = fname; a.click();
+    a.href = URL.createObjectURL(b); a.download = fname(); a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     toast('Imagen descargada ✓');
   });
   if (navigator.canShare && navigator.canShare({ files: [new File([''], 'x.jpg', { type: 'image/jpeg' })] })) {
     $('shareImgBtn').hidden = false;
     $('shareImgBtn').addEventListener('click', async () => {
-      const f = new File([await blob()], fname, { type: 'image/jpeg' });
+      const f = new File([await blob()], fname(), { type: 'image/jpeg' });
       try { await navigator.share({ files: [f], text: $('caption').value }); } catch {}
     });
   }

@@ -32,7 +32,12 @@
 
   <section class="studio">
     <div class="stage-col">
-      <div class="stage" id="stage">
+      <div class="formats" id="formats" role="group" aria-label="Formato">
+        <button type="button" data-fmt="cuadrado" aria-pressed="true"><i class="ic sq"></i>Cuadrado<small>Feed</small></button>
+        <button type="button" data-fmt="horizontal" aria-pressed="false"><i class="ic hz"></i>Horizontal<small>Fotos grupales</small></button>
+        <button type="button" data-fmt="vertical" aria-pressed="false"><i class="ic vt"></i>Vertical<small>Historias</small></button>
+      </div>
+      <div class="stage" id="stage" data-fmt="cuadrado">
         <canvas id="canvas" width="1080" height="1080" aria-label="Vista previa del marco"></canvas>
         <video id="video" playsinline muted hidden></video>
         <div class="drop-hint" id="dropHint">
