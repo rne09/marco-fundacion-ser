@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>24 Años Fundación Ser · Crea tu marco</title>
+<meta name="description" content="Celebra los 24 años de Fundación Ser. Crea tu foto con el marco oficial y compártela.">
+<meta property="og:title" content="24 Años Fundación Ser · Crea tu marco">
+<meta property="og:description" content="Celebra los 24 años de Fundación Ser. Crea un marco con tu foto.">
+<meta property="og:image" content="assets/marco.png">
+<meta name="theme-color" content="#0b3d91">
+<link rel="icon" href="assets/marco.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg"><svg viewBox="0 0 1440 320" preserveAspectRatio="none"><path d="M0 220 C 360 120 720 300 1440 140 L1440 320 L0 320Z" fill="url(#g1)"/><path d="M0 260 C 420 190 860 320 1440 210 L1440 320 L0 320Z" fill="url(#g2)"/><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#22c3f5" stop-opacity=".25"/><stop offset="1" stop-color="#0b3d91" stop-opacity=".25"/></linearGradient><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#7fdcfb" stop-opacity=".35"/><stop offset="1" stop-color="#1565c0" stop-opacity=".35"/></linearGradient></defs></svg></div>
+
+<header class="top">
+  <div class="brand"><span class="dot"></span>Fundación Ser</div>
+  <span class="pill">24 años · Colombia</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">En cada servicio calidad. En cada gesto calidez</p>
+    <h1><span class="big">24</span> años <em>conectando personas</em></h1>
+    <p class="lead">Celebra con nosotros. Sube tu foto, ajústala dentro del marco oficial y compártela en tus redes.</p>
+  </section>
+
+  <section class="studio">
+    <div class="stage-col">
+      <div class="stage" id="stage">
+        <canvas id="canvas" width="1080" height="1080" aria-label="Vista previa del marco"></canvas>
+        <video id="video" playsinline muted hidden></video>
+        <div class="drop-hint" id="dropHint">
+          <div class="drop-icon">＋</div>
+          <strong>Arrastra tu foto aquí</strong>
+          <span>o usa los botones de abajo</span>
+        </div>
+      </div>
+      <p class="tip" id="tip" hidden>Arrastra la foto para moverla · pellizca o usa el control para hacer zoom</p>
+    </div>
+
+    <div class="panel">
+      <ol class="steps" id="steps">
+        <li class="active" data-step="1"><span>1</span>Foto</li>
+        <li data-step="2"><span>2</span>Ajusta</li>
+        <li data-step="3"><span>3</span>Comparte</li>
+      </ol>
+
+      <div class="card" id="card1">
+        <h2>Agrega tu foto</h2>
+        <p class="muted">Una foto clara de frente queda mejor.</p>
+        <div class="btns">
+          <label class="btn primary">
+            <input type="file" id="file" accept="image/*" hidden>
+            Elegir foto
+          </label>
+          <button class="btn ghost" id="camBtn" type="button">Usar cámara</button>
+        </div>
+        <button class="btn primary full" id="shotBtn" type="button" hidden>Tomar foto</button>
+      </div>
+
+      <div class="card" id="card2" hidden>
+        <h2>Ajusta tu foto</h2>
+        <label class="range">
+          <span>Zoom</span>
+          <input type="range" id="zoom" min="1" max="4" step="0.01" value="1">
+        </label>
+        <label class="range">
+          <span>Girar</span>
+          <input type="range" id="rotate" min="-180" max="180" step="1" value="0">
+        </label>
+        <div class="btns">
+          <button class="btn ghost" id="resetBtn" type="button">Restablecer</button>
+          <button class="btn ghost" id="changeBtn" type="button">Cambiar foto</button>
+        </div>
+        <button class="btn primary full" id="doneBtn" type="button">Listo, continuar</button>
+      </div>
+
+      <div class="card" id="card3" hidden>
+        <h2>¡Tu marco está listo! 🎉</h2>
+        <p class="muted">Descárgalo y compártelo con <b>#24AñosFundaciónSer</b></p>
+        <button class="btn primary full" id="downloadBtn" type="button">Descargar imagen</button>
+        <button class="btn ghost full" id="shareImgBtn" type="button" hidden>Compartir imagen</button>
+        <button class="btn link" id="backBtn" type="button">← Volver a ajustar</button>
+      </div>
+
+      <p class="privacy">🔒 Tu foto se procesa solo en tu dispositivo. No se sube a ningún servidor.</p>
+    </div>
+  </section>
+
+  <section class="info">
+    <div class="about">
+      <h3>Sobre esta campaña</h3>
+      <p>Celebra los <b>24 años</b> de <b>Fundación Ser</b>. Crea un marco con tu foto y únete a la celebración.</p>
+      <dl>
+        <div><dt>Organiza</dt><dd>Fundación Ser</dd></div>
+        <div><dt>Fecha</dt><dd>13 nov 2026</dd></div>
+        <div><dt>Lugar</dt><dd>Colombia</dd></div>
+      </dl>
+    </div>
+    <div class="share">
+      <h3>Invita a más personas</h3>
+      <p class="muted">Comparte el enlace o muestra el código QR en tu evento.</p>
+      <div class="linkrow"><input id="pageUrl" readonly><button class="btn primary sm" id="copyBtn" type="button">Copiar</button></div>
+      <div class="btns">
+        <a class="btn wa" id="waBtn" target="_blank" rel="noopener">WhatsApp</a>
+        <button class="btn ghost" id="shareLinkBtn" type="button">Compartir</button>
+      </div>
+      <div class="qr" id="qr"></div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 Fundación Ser · En cada servicio calidad. En cada gesto calidez</footer>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
