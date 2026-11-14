@@ -148,7 +148,7 @@
     $('shareImgBtn').hidden = false;
     $('shareImgBtn').addEventListener('click', async () => {
       const f = new File([await blob()], fname, { type: 'image/jpeg' });
-      try { await navigator.share({ files: [f], text: '¡Celebro los 24 años de Fundación Ser! ' + location.href }); } catch {}
+      try { await navigator.share({ files: [f], text: $('caption').value }); } catch {}
     });
   }
 
@@ -169,6 +169,12 @@
     const q = qrcode(0, 'M'); q.addData(url); q.make();
     $('qr').innerHTML = q.createImgTag(5, 0);
   }
+
+  $('copyCapBtn').addEventListener('click', async () => {
+    const t = $('caption').value;
+    try { await navigator.clipboard.writeText(t); } catch { $('caption').select(); document.execCommand('copy'); }
+    toast('Descripción copiada ✓');
+  });
 
   let tt;
   function toast(t) {
