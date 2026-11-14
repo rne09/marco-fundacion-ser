@@ -72,7 +72,7 @@
   }
 
   function setPhoto(img) {
-    photo = img;
+    photo = img; counted = false;
     // sugerir formato según la foto
     const r = img.width / img.height;
     setFormat(r > 1.25 ? 'horizontal' : r < 0.8 ? 'vertical' : 'cuadrado');
@@ -179,13 +179,13 @@
     const a = document.createElement('a');
     a.href = URL.createObjectURL(b); a.download = fname(); a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    toast('Imagen descargada ✓');
+    toast('Imagen descargada ✓'); countOnce();
   });
   if (navigator.canShare && navigator.canShare({ files: [new File([''], 'x.jpg', { type: 'image/jpeg' })] })) {
     $('shareImgBtn').hidden = false;
     $('shareImgBtn').addEventListener('click', async () => {
       const f = new File([await blob()], fname(), { type: 'image/jpeg' });
-      try { await navigator.share({ files: [f], text: $('caption').value }); } catch {}
+      countOnce(); try { await navigator.share({ files: [f], text: $('caption').value }); } catch {}
     });
   }
 
@@ -212,6 +212,30 @@
     try { await navigator.clipboard.writeText(t); } catch { $('caption').select(); document.execCommand('copy'); }
     toast('Descripción copiada ✓');
   });
+
+  // ---------- contador en vivo ----------
+  let shown = null, counted = false;
+  function render(n) {
+    if (n == null) return;
+    $('counter').hidden = false;
+    $('countTxt').textContent = n === 1 ? 'persona ya creó su marco' : 'personas ya crearon su marco';
+    if (shown !== null && n > shown) {
+      const from = shown, t0 = performance.now();
+      const tick = (t) => { const p = Math.min(1, (t - t0) / 600); $('countNum').textContent = Math.round(from + (n - from) * p).toLocaleString('es-CO'); if (p < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+      $('counter').classList.remove('bump'); void $('counter').offsetWidth; $('counter').classList.add('bump');
+    } else $('countNum').textContent = n.toLocaleString('es-CO');
+    shown = n;
+  }
+  async function poll() {
+    try { const r = await fetch('/api/contador', { cache: 'no-store' }); if (r.ok) render((await r.json()).total); } catch {}
+  }
+  async function countOnce() {
+    if (counted) return; counted = true;
+    try { const r = await fetch('/api/contador', { method: 'POST' }); if (r.ok) render((await r.json()).total); } catch {}
+  }
+  poll(); setInterval(() => { if (!document.hidden) poll(); }, 8000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
 
   let tt;
   function toast(t) {
